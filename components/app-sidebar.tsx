@@ -2,115 +2,104 @@
 
 import * as React from "react"
 import {
-  ClipboardList,
-  Database,
-  FileText,
-  GalleryVerticalEnd,
-  Users,
-} from "lucide-react"
+  IconDashboard,
+  IconDatabase,
+  IconFileWord,
+  IconFolder,
+  IconListDetails,
+  IconUsers,
+} from "@tabler/icons-react"
 
+import { NavDocuments } from "@/components/nav-documents"
 import { NavMain } from "@/components/nav-main"
-import { NavProjects } from "@/components/nav-projects"
 import { NavUser } from "@/components/nav-user"
-import { TeamSwitcher } from "@/components/team-switcher"
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
-  SidebarRail,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
 } from "@/components/ui/sidebar"
 
-// This is sample data.
 const data = {
   user: {
-    name: "admin",
-    email: "admin@tiku.com",
-    avatar: "/avatars/admin.jpg",
+    name: "李老师",
+    email: "teacher@example.com",
+    avatar: "/avatars/teacher.jpg",
   },
-  teams: [
-    {
-      name: "试题库系统",
-      logo: GalleryVerticalEnd,
-      plan: "Management System",
-    },
-  ],
   navMain: [
     {
-      title: "数据浏览",
-      url: "#",
-      icon: Users,
-      isActive: true,
-      items: [
-        {
-          title: "联盟查看",
-          url: "/alliances",
-        },
-        {
-          title: "学校浏览",
-          url: "/schools",
-        },
-      ],
+      title: "首页",
+      url: "/",
+      icon: IconDashboard,
     },
     {
-      title: "考试查询",
-      url: "#",
-      icon: ClipboardList,
-      items: [
-        {
-          title: "考试详情",
-          url: "/exams",
-        },
-        {
-          title: "科目概览",
-          url: "/subjects",
-        },
-      ],
+      title: "组织",
+      url: "/alliances",
+      icon: IconUsers,
     },
     {
-      title: "题目库",
-      url: "#",
-      icon: Database,
-      items: [
-        {
-          title: "试题检索",
-          url: "/questions",
-        },
-        {
-          title: "素材资源",
-          url: "/media",
-        },
-      ],
+      title: "学校",
+      url: "/schools",
+      icon: IconFolder,
     },
     {
-      title: "组卷中心",
-      url: "#",
-      icon: FileText,
-      items: [
-        {
-          title: "我的组卷",
-          url: "/papers",
-        },
-      ],
+      title: "考试",
+      url: "/exams",
+      icon: IconListDetails,
+    },
+    {
+      title: "题目",
+      url: "/questions",
+      icon: IconDatabase,
     },
   ],
-  projects: [],
+  documents: [
+    {
+      name: "高一月考数学卷",
+      url: "/papers",
+      icon: IconFileWord,
+    },
+    {
+      name: "期中英语听力卷",
+      url: "/papers",
+      icon: IconFileWord,
+    },
+    {
+      name: "七年级期末复习卷",
+      url: "/papers",
+      icon: IconFileWord,
+    },
+  ],
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
-    <Sidebar collapsible="icon" {...props}>
+    <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
-        <TeamSwitcher teams={data.teams} />
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              asChild
+              className="data-[slot=sidebar-menu-button]:!p-1.5"
+            >
+                <a href="#">
+                <IconDatabase className="!size-5" />
+                <span className="text-base font-semibold">智慧题库</span>
+                </a>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
+        <NavDocuments items={data.documents} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={data.user} />
       </SidebarFooter>
-      <SidebarRail />
     </Sidebar>
   )
 }

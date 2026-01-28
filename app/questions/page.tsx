@@ -1,5 +1,17 @@
+import Link from "next/link"
+
 import { createSupabaseServerClient } from "@/lib/supabase/server"
 import DashboardLayout from "@/components/dashboard-layout"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+
+function getStemPreview(content: unknown) {
+  if (typeof content === "string") return content
+  if (content && typeof content === "object") {
+    const obj = content as { stem?: string }
+    return obj.stem ?? JSON.stringify(content)
+  }
+  return "-"
+}
 
 export default async function QuestionsPage() {
   const supabase = createSupabaseServerClient()
@@ -10,54 +22,44 @@ export default async function QuestionsPage() {
     .limit(50)
 
   return (
-    <DashboardLayout breadcrumb={[{ label: "资源库" }, { label: "题目池" }]}>
+    <DashboardLayout breadcrumb={[{ label: "资源库" }, { label: "题库" }]}>
       <div className="flex flex-col gap-4">
-        <h1 className="text-2xl font-bold">题目池 (前50条)</h1>
+        <div>
+          <h1 className="text-2xl font-bold">题库浏览</h1>
+          <p className="text-muted-foreground">
+            按题型与难度筛选，快速挑选课堂练习题。
+          </p>
+        </div>
         {error && (
           <div className="p-4 bg-destructive/10 text-destructive rounded-md">
             错误: {error.message}
           </div>
         )}
-        <div className="rounded-md border overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b bg-muted/50 transition-colors">
-                <th className="h-10 px-4 text-left font-medium">ID</th>
-                <th className="h-10 px-4 text-left font-medium">类别</th>
-                <th className="h-10 px-4 text-left font-medium">类型</th>
-                <th className="h-10 px-4 text-left font-medium">父ID</th>
-                <th className="h-10 px-4 text-left font-medium">题干预览</th>
-                <th className="h-10 px-4 text-left font-medium">操作</th>
-              </tr>
-            </thead>
-            <tbody>
-              {questions?.map((q) => (
-                <tr key={q.id} className="border-b transition-colors hover:bg-muted/50">
-                  <td className="p-4">{q.id}</td>
-                  <td className="p-4">
-                    <span className={`px-2 py-1 rounded text-xs ${q.q_category === 'CONTAINER' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'}`}>
-                      {q.q_category}
-                    </span>
-                  </td>
-                  <td className="p-4">{q.q_type || "-"}</td>
-                  <td className="p-4">{q.parent_id || "-"}</td>
-                  <td className="p-4 max-w-[300px] truncate">
-                    {typeof q.content_json === 'object' ? (q.content_json?.stem || JSON.stringify(q.content_json)) : q.content_json}
-                  </td>
-                  <td className="p-4">
-                    <button className="text-primary hover:underline">查看详情</button>
-                  </td>
-                </tr>
-              ))}
-              {questions?.length === 0 && (
-                <tr>
-                  <td colSpan={6} className="p-4 text-center text-muted-foreground">
-                    暂无数据
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {questions?.map((q) => (
+            <Link key={q.id} href={`/questions/${q.id}`} className="block">
+              <Card className="transition hover:shadow-md">
+                <CardHeader>
+                  <CardTitle>题目 #{q.id}</CardTitle>
+                  <CardDescription>
+                    {q.q_type || "未标注题型"} · {q.q_category || "-"}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="text-sm text-muted-foreground">
+                  <div className="line-clamp-3">{getStemPreview(q.content_json)}</div>
+                  <div className="mt-2">父题：{q.parent_id || "无"}</div>
+                </CardContent>
+              </Card>
+            </Link>
+          ))}
+          {questions?.length === 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle>暂无题目</CardTitle>
+                <CardDescription>可以通过上传或编辑题目来丰富题库。</CardDescription>
+              </CardHeader>
+            </Card>
+          )}
         </div>
       </div>
     </DashboardLayout>

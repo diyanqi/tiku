@@ -1,14 +1,33 @@
+import Link from "next/link"
+
 import DashboardLayout from "@/components/dashboard-layout"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { mediaItems } from "./media-data"
 
 export default function MediaPage() {
   return (
-    <DashboardLayout breadcrumb={[{ label: "资源库" }, { label: "媒体资源" }]}>
-      <div className="flex flex-col gap-4 text-center py-20">
-        <h1 className="text-2xl font-bold">媒体资源库</h1>
-        <p className="text-muted-foreground">根据数据库模式，媒体资源通过 media_anchor 引用。</p>
-        <div className="mx-auto max-w-md p-6 border rounded-lg bg-muted/20">
-          <p>此处将展示存储在系统中的音频、视频及图片资源。</p>
-          <p className="mt-2 text-sm text-yellow-600 font-medium">提示: 媒体资源通常存储在 Supabase Storage 或独立资源表中。</p>
+    <DashboardLayout breadcrumb={[{ label: "资源库" }, { label: "音视频" }]}>
+      <div className="flex flex-col gap-4">
+        <div>
+          <h1 className="text-2xl font-bold">音视频与素材</h1>
+          <p className="text-muted-foreground">
+            为听力、实验与多媒体题目提供素材支持。
+          </p>
+        </div>
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {mediaItems.map((item) => (
+            <Link key={item.id} href={`/media/${item.id}`} className="block">
+              <Card className="transition hover:shadow-md">
+                <CardHeader>
+                  <CardTitle>{item.title}</CardTitle>
+                  <CardDescription>{item.type} · {item.id}</CardDescription>
+                </CardHeader>
+                <CardContent className="text-sm text-muted-foreground">
+                  时长：{item.duration}
+                </CardContent>
+              </Card>
+            </Link>
+          ))}
         </div>
       </div>
     </DashboardLayout>

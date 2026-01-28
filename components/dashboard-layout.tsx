@@ -35,7 +35,7 @@ export default function DashboardLayout({
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem className="hidden md:block">
-                <BreadcrumbLink href="/">组卷中心</BreadcrumbLink>
+                <BreadcrumbLink href="/">学习中心</BreadcrumbLink>
               </BreadcrumbItem>
               {breadcrumb.map((item) => (
                 <React.Fragment key={item.label}>
