@@ -2,7 +2,7 @@ import Link from "next/link"
 
 import { createSupabaseServerClient } from "@/lib/supabase/server"
 import DashboardLayout from "@/components/dashboard-layout"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardBody, CardHeader, Divider } from "@/components/heroui-components"
 
 export default async function SubjectsPage() {
   const supabase = createSupabaseServerClient()
@@ -31,16 +31,17 @@ export default async function SubjectsPage() {
             const lines = (stats.lines ?? {}) as Record<string, unknown>
             return (
               <Link key={subject.id} href={`/subjects/${subject.id}`} className="block">
-                <Card className="transition hover:shadow-md">
-                  <CardHeader>
-                    <CardTitle>{subject.name || "未命名科目"}</CardTitle>
-                    <CardDescription>科目编号：{subject.id}</CardDescription>
+                <Card className="transition hover:shadow-md" isPressable>
+                  <CardHeader className="flex flex-col items-start px-4 pb-0 pt-4">
+                    <h3 className="text-lg font-bold">{subject.name || "未命名科目"}</h3>
+                    <p className="text-default-500 text-small">科目编号：{subject.id}</p>
                   </CardHeader>
-                  <CardContent className="text-sm text-muted-foreground">
+                  <CardBody className="px-4 py-2 text-sm text-default-500">
+                    <Divider className="my-2" />
                     <div>平均分：{stats.avg ?? "-"}</div>
                     <div>最高分：{stats.max ?? "-"}</div>
-                    <div>分数线：{Object.keys(lines).length ? JSON.stringify(lines) : "-"}</div>
-                  </CardContent>
+                    <div className="truncate">分数线：{Object.keys(lines).length ? JSON.stringify(lines) : "-"}</div>
+                  </CardBody>
                 </Card>
               </Link>
             )
@@ -48,8 +49,8 @@ export default async function SubjectsPage() {
           {subjects?.length === 0 && (
             <Card>
               <CardHeader>
-                <CardTitle>暂无科目</CardTitle>
-                <CardDescription>创建科目后可同步学习进度。</CardDescription>
+                <h3 className="text-lg font-bold">暂无科目</h3>
+                <p className="text-default-500 text-small">创建科目后可同步学习进度。</p>
               </CardHeader>
             </Card>
           )}

@@ -10,7 +10,7 @@ const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 const isDevLike = process.env.NODE_ENV !== "production"
 const hasSupabaseEnv = Boolean(supabaseUrl && supabaseServiceRoleKey)
 
-export const createSupabaseServerClient = () => {
+export const createSupabaseServerClient = (): any => {
   if (!hasSupabaseEnv) {
     if (isDevLike) {
       return createMockSupabaseClient()

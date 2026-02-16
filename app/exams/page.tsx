@@ -2,7 +2,7 @@ import Link from "next/link"
 
 import { createSupabaseServerClient } from "@/lib/supabase/server"
 import DashboardLayout from "@/components/dashboard-layout"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardBody, CardHeader, Divider, Chip } from "@/components/heroui-components"
 
 export default async function ExamsPage() {
   const supabase = createSupabaseServerClient()
@@ -30,17 +30,18 @@ export default async function ExamsPage() {
             const settings = (exam.exam_settings ?? {}) as Record<string, unknown>
             return (
               <Link key={exam.id} href={`/exams/${exam.id}`} className="block">
-                <Card className="transition hover:shadow-md">
-                  <CardHeader>
-                    <CardTitle>{exam.name || "未命名练习"}</CardTitle>
-                    <CardDescription>编号：{exam.id}</CardDescription>
+                <Card className="transition hover:shadow-md" isPressable>
+                  <CardHeader className="flex flex-col items-start px-4 pb-0 pt-4">
+                    <h3 className="text-lg font-bold">{exam.name || "未命名练习"}</h3>
+                    <p className="text-default-500 text-small">编号：{exam.id}</p>
                   </CardHeader>
-                  <CardContent className="text-sm">
+                  <CardBody className="px-4 py-2 text-sm text-default-600">
+                    <Divider className="my-2" />
                     <div className="flex flex-wrap gap-2">
-                      <span className="rounded-full bg-muted px-2 py-1">随机出题：{settings.randomize ? "开启" : "关闭"}</span>
-                      <span className="rounded-full bg-muted px-2 py-1">防作弊：{settings.anti_cheat ? "开启" : "关闭"}</span>
+                      <Chip size="sm" variant="flat" color={settings.randomize ? "success" : "default"}>随机出题：{settings.randomize ? "开启" : "关闭"}</Chip>
+                      <Chip size="sm" variant="flat" color={settings.anti_cheat ? "success" : "default"}>防作弊：{settings.anti_cheat ? "开启" : "关闭"}</Chip>
                     </div>
-                  </CardContent>
+                  </CardBody>
                 </Card>
               </Link>
             )
@@ -48,8 +49,8 @@ export default async function ExamsPage() {
           {exams?.length === 0 && (
             <Card>
               <CardHeader>
-                <CardTitle>暂无练习</CardTitle>
-                <CardDescription>创建练习后即可布置给班级。</CardDescription>
+                <h3 className="text-lg font-bold">暂无练习</h3>
+                <p className="text-default-500 text-small">创建练习后即可布置给班级。</p>
               </CardHeader>
             </Card>
           )}

@@ -1,5 +1,5 @@
 import DashboardLayout from "@/components/dashboard-layout"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardBody, CardHeader, Divider, Code } from "@/components/heroui-components"
 import { createSupabaseServerClient } from "@/lib/supabase/server"
 
 function formatRegions(regions: unknown) {
@@ -42,15 +42,24 @@ export default async function AllianceDetailPage({
           </div>
         )}
         {alliance && (
-          <Card>
-            <CardHeader>
-              <CardTitle>联盟 #{alliance.id}</CardTitle>
-              <CardDescription>{formatRegions(alliance.regions)}</CardDescription>
+          <Card className="p-4">
+            <CardHeader className="flex flex-col items-start px-4 pb-0 pt-4">
+              <h2 className="text-2xl font-bold">联盟 #{alliance.id}</h2>
+              <p className="text-default-500">{formatRegions(alliance.regions)}</p>
             </CardHeader>
-            <CardContent className="text-sm text-muted-foreground">
-              <div>覆盖学段：{Array.isArray(alliance.edu_stages) ? alliance.edu_stages.join("、") : "未设置"}</div>
-              <div className="mt-2">原始配置：{JSON.stringify(alliance, null, 2)}</div>
-            </CardContent>
+            <Divider className="my-4" />
+            <CardBody className="gap-4 text-sm text-default-600">
+              <div className="flex gap-2 items-center">
+                <span className="font-semibold w-24">覆盖学段:</span>
+                <span>{Array.isArray(alliance.edu_stages) ? alliance.edu_stages.join("、") : "未设置"}</span>
+              </div>
+              <div className="flex flex-col gap-1">
+                <span className="font-semibold">原始配置:</span>
+                <pre className="p-3 bg-default-100 rounded-lg overflow-auto">
+                  {JSON.stringify(alliance, null, 2)}
+                </pre>
+              </div>
+            </CardBody>
           </Card>
         )}
       </div>

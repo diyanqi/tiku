@@ -1,21 +1,20 @@
 "use client"
 
-import { AppSidebar } from "@/components/app-sidebar"
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
-import { Separator } from "@/components/ui/separator"
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar"
-import { ThemeToggle } from "@/components/theme-toggle"
+import { 
+  Card, 
+  CardBody, 
+  CardHeader, 
+  Divider, 
+  Chip, 
+  Table, 
+  TableHeader, 
+  TableColumn, 
+  TableBody, 
+  TableRow, 
+  TableCell,
+  Code
+} from "@heroui/react"
+import { IconDatabase, IconTopologyStar3, IconInfoCircle } from "@tabler/icons-react"
 
 export type QuestionRow = {
   id: number
@@ -70,136 +69,119 @@ export default function DashboardShell({
   alliancesErrorMessage,
 }: DashboardShellProps) {
   return (
-    <SidebarInset>
-      <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
-        <div className="flex flex-1 items-center gap-2 px-4">
-          <SidebarTrigger className="-ml-1" />
-          <Separator
-            orientation="vertical"
-            className="mr-2 data-[orientation=vertical]:h-4"
-          />
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem className="hidden md:block">
-                <BreadcrumbLink href="#">组卷中心</BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator className="hidden md:block" />
-              <BreadcrumbItem>
-                <BreadcrumbPage>首页数据概览</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
-        </div>
-        <div className="ml-auto pr-4">
-          <ThemeToggle />
-        </div>
-      </header>
-      <div className="flex flex-1 flex-col gap-6 p-4 pt-0">
-          <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {stats.map((item) => (
-              <div
-                key={item.table}
-                className="rounded-xl border bg-card p-4 shadow-sm"
-              >
-                <div className="text-sm text-muted-foreground">
-                  {item.label}
-                </div>
-                <div className="mt-2 flex items-end justify-between">
-                  <div className="text-3xl font-semibold">{item.count}</div>
-                  <div className="text-xs text-muted-foreground">
-                    {item.error ? `获取失败：${item.error}` : item.table}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </section>
-
-          <section className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
-            <div className="rounded-xl border bg-card p-4 shadow-sm">
+    <div className="flex flex-col gap-8">
+      {/* Stats Section */}
+      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        {stats.map((item) => (
+          <Card key={item.table} className="border-none bg-default-100/50" shadow="none">
+            <CardBody className="p-5 flex flex-col gap-2">
               <div className="flex items-center justify-between">
-                <div>
-                  <h2 className="text-lg font-semibold">最新题目</h2>
-                  <p className="text-sm text-muted-foreground">
-                    按题目池最新 ID 排序，展示结构化题干与媒体定位信息
+                <p className="text-default-500 text-xs font-bold uppercase tracking-wider">{item.label}</p>
+                <IconDatabase size={16} className="text-default-300" />
+              </div>
+              <div className="flex items-baseline gap-2">
+                <span className="text-3xl font-bold tracking-tight">{item.count}</span>
+                <span className="text-default-400 text-xs font-medium uppercase">{item.table}</span>
+              </div>
+              {item.error && (
+                <Chip size="sm" color="danger" variant="flat" className="mt-1">
+                  获取失败
+                </Chip>
+              )}
+            </CardBody>
+          </Card>
+        ))}
+      </section>
+
+      <div className="grid gap-8 lg:grid-cols-2">
+        {/* Questions Section */}
+        <Card className="border-none bg-default-50 shadow-sm" shadow="none">
+          <CardHeader className="flex flex-col items-start px-6 pt-6 pb-2">
+            <div className="flex items-center gap-2">
+              <div className="p-2 bg-primary/10 rounded-lg text-primary">
+                <IconTopologyStar3 size={20} />
+              </div>
+              <div>
+                <h2 className="text-lg font-bold">最新试题</h2>
+                <p className="text-default-500 text-xs font-medium">同步自 Supabase 题库系统</p>
+              </div>
+            </div>
+          </CardHeader>
+          <CardBody className="p-6">
+            <div className="space-y-4">
+              {latestQuestions.map((item) => (
+                <div key={item.id} className="group bg-white dark:bg-default-100 p-4 rounded-2xl border-1 border-default-200 transition-all hover:border-primary/30 hover:shadow-md">
+                  <div className="flex flex-wrap items-center gap-2 mb-3">
+                    <Chip size="sm" variant="dot" color="primary" className="border-none font-bold">ID: {item.id}</Chip>
+                    <Chip size="sm" variant="flat" className="bg-default-200/50 font-medium">类型: {item.q_type ?? "-"}</Chip>
+                    <Chip size="sm" variant="flat" className="bg-default-200/50 font-medium">{item.q_category ?? "-"}</Chip>
+                  </div>
+                  <p className="text-sm text-default-700 leading-relaxed font-medium line-clamp-3">
+                    {formatContentPreview(item.content_json)}
                   </p>
                 </div>
-                <span className="text-xs text-muted-foreground">
-                  {questionsErrorMessage ? "加载失败" : "同步 Supabase"}
-                </span>
+              ))}
+              {!latestQuestions.length && !questionsErrorMessage && (
+                <div className="flex flex-col items-center justify-center p-12 text-center bg-default-100/50 rounded-3xl border-2 border-dashed border-default-200">
+                  <p className="text-default-400 font-bold">暂无试题数据</p>
+                </div>
+              )}
+              {questionsErrorMessage && (
+                <Card className="bg-danger-50 border-none">
+                  <CardBody className="text-danger font-bold text-sm">
+                    {questionsErrorMessage}
+                  </CardBody>
+                </Card>
+              )}
+            </div>
+          </CardBody>
+        </Card>
+
+        {/* Alliances Section */}
+        <Card className="border-none bg-default-50 shadow-sm" shadow="none">
+          <CardHeader className="flex flex-col items-start px-6 pt-6 pb-2">
+            <div className="flex items-center gap-2">
+              <div className="p-2 bg-secondary/10 rounded-lg text-secondary">
+                <IconDatabase size={20} />
               </div>
-              <div className="mt-4 space-y-3">
-                {latestQuestions.map((item) => (
-                  <div
-                    key={item.id}
-                    className="rounded-lg border border-dashed p-3"
-                  >
-                    <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-                      <span>题目 ID: {item.id}</span>
-                      <span>类型: {item.q_type ?? "-"}</span>
-                      <span>节点: {item.q_category ?? "-"}</span>
-                      <span>父级: {item.parent_id ?? "顶级"}</span>
-                      <span>
-                        媒体锚点: {item.media_anchor ? "已设置" : "未设置"}
-                      </span>
-                    </div>
-                    <p className="mt-2 line-clamp-3 text-sm">
-                      {formatContentPreview(item.content_json)}
-                    </p>
-                  </div>
-                ))}
-                {!latestQuestions.length && (
-                  <div className="rounded-lg border border-dashed p-4 text-sm text-muted-foreground">
-                    还没有题目数据，或当前账号无读取权限。
-                  </div>
-                )}
-                {questionsErrorMessage && (
-                  <div className="rounded-lg border border-dashed p-4 text-sm text-destructive">
-                    获取题目数据失败：{questionsErrorMessage}
-                  </div>
-                )}
+              <div>
+                <h2 className="text-lg font-bold">联盟数据预览</h2>
+                <p className="text-default-500 text-xs font-medium">JSONB 字段结构化展示</p>
               </div>
             </div>
-
-            <div className="rounded-xl border bg-card p-4 shadow-sm">
-              <h2 className="text-lg font-semibold">联盟地域与学段</h2>
-              <p className="text-sm text-muted-foreground">
-                显示联盟 JSONB 字段样例，用于地区与学段过滤。
-              </p>
-              <div className="mt-4 space-y-3">
-                {alliancesPreview.map((item) => (
-                  <div key={item.id} className="rounded-lg border p-3">
-                    <div className="text-sm font-medium">联盟 #{item.id}</div>
-                    <pre className="mt-2 whitespace-pre-wrap break-words rounded bg-muted/50 p-2 text-xs">
-                      {formatJson({
-                        regions: item.regions,
-                        edu_stages: item.edu_stages,
-                      })}
-                    </pre>
+          </CardHeader>
+          <CardBody className="p-6">
+            <div className="space-y-4">
+              {alliancesPreview.map((item) => (
+                <div key={item.id} className="bg-white dark:bg-default-100 p-4 rounded-2xl border-1 border-default-200">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="font-bold text-default-800">联盟 #{item.id}</span>
                   </div>
-                ))}
-                {!alliancesPreview.length && (
-                  <div className="rounded-lg border border-dashed p-4 text-sm text-muted-foreground">
-                    暂无联盟数据或无访问权限。
-                  </div>
-                )}
-                {alliancesErrorMessage && (
-                  <div className="rounded-lg border border-dashed p-4 text-sm text-destructive">
-                    获取联盟数据失败：{alliancesErrorMessage}
-                  </div>
-                )}
-              </div>
+                  <Code className="w-full text-[11px] h-32 overflow-auto bg-default-50 p-3 rounded-xl block border-1 border-default-200">
+                    {formatJson({
+                      regions: item.regions,
+                      edu_stages: item.edu_stages,
+                    })}
+                  </Code>
+                </div>
+              ))}
             </div>
-          </section>
+          </CardBody>
+        </Card>
+      </div>
 
-          <section className="rounded-xl border bg-card p-4 shadow-sm">
-            <h2 className="text-lg font-semibold">题目树结构说明</h2>
-            <p className="mt-2 text-sm text-muted-foreground">
-              试题库使用递归树结构组织题目：顶级材料（CONTAINER）可包含多个题组或小题，
-              叶子节点（LEAF）对应实际作答项。前端根据 q_type 决定渲染组件，
-              并通过 media_anchor 定位长音视频材料的片段。
+      {/* Info Section */}
+      <Card className="border-none bg-primary/5 text-primary-700" shadow="none">
+        <CardBody className="p-6 flex flex-row gap-4 items-center">
+          <IconInfoCircle size={24} className="shrink-0" />
+          <div>
+            <h3 className="font-bold">题目树结构说明</h3>
+            <p className="text-sm opacity-80 font-medium">
+              系统通过父子节点（parent_id）构建起题目树。CONTAINER 类型容器可嵌套多个 LEAF 类型题目，支持多级复合题型的灵活组卷。
             </p>
-          </section>
-        </div>
-      </SidebarInset>
+          </div>
+        </CardBody>
+      </Card>
+    </div>
   )
 }

@@ -1,36 +1,19 @@
 "use client"
 
 import * as React from "react"
-import { Area, AreaChart, CartesianGrid, XAxis } from "recharts"
+import { Area, AreaChart, CartesianGrid, XAxis, ResponsiveContainer, Tooltip as RechartsTooltip } from "recharts"
 
 import { useIsMobile } from "@/hooks/use-mobile"
 import {
   Card,
-  CardAction,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-  type ChartConfig,
-} from "@/components/ui/chart"
-import {
+  CardBody,
   Select,
-  SelectContent,
   SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import {
-  ToggleGroup,
-  ToggleGroupItem,
-} from "@/components/ui/toggle-group"
-
-export const description = "An interactive area chart"
+  Tabs,
+  Tab,
+  Chip,
+} from "@heroui/react"
+import { IconChartLine, IconTrendingUp } from "@tabler/icons-react"
 
 const chartData = [
   { date: "2024-04-01", desktop: 222, mobile: 150 },
@@ -126,20 +109,6 @@ const chartData = [
   { date: "2024-06-30", desktop: 446, mobile: 400 },
 ]
 
-const chartConfig = {
-  visitors: {
-    label: "Visitors",
-  },
-  desktop: {
-    label: "Desktop",
-    color: "var(--primary)",
-  },
-  mobile: {
-    label: "Mobile",
-    color: "var(--primary)",
-  },
-} satisfies ChartConfig
-
 export function ChartAreaInteractive() {
   const isMobile = useIsMobile()
   const [timeRange, setTimeRange] = React.useState("90d")
@@ -165,127 +134,139 @@ export function ChartAreaInteractive() {
   })
 
   return (
-    <Card className="@container/card">
-      <CardHeader>
-        <CardTitle>Total Visitors</CardTitle>
-        <CardDescription>
-          <span className="hidden @[540px]/card:block">
-            Total for the last 3 months
-          </span>
-          <span className="@[540px]/card:hidden">Last 3 months</span>
-        </CardDescription>
-        <CardAction>
-          <ToggleGroup
-            type="single"
-            value={timeRange}
-            onValueChange={setTimeRange}
-            variant="outline"
-            className="hidden *:data-[slot=toggle-group-item]:!px-4 @[767px]/card:flex"
-          >
-            <ToggleGroupItem value="90d">Last 3 months</ToggleGroupItem>
-            <ToggleGroupItem value="30d">Last 30 days</ToggleGroupItem>
-            <ToggleGroupItem value="7d">Last 7 days</ToggleGroupItem>
-          </ToggleGroup>
-          <Select value={timeRange} onValueChange={setTimeRange}>
-            <SelectTrigger
-              className="flex w-40 **:data-[slot=select-value]:block **:data-[slot=select-value]:truncate @[767px]/card:hidden"
-              size="sm"
-              aria-label="Select a value"
+    <Card className="w-full bg-default-50/50 backdrop-blur-3xl border-0 shadow-2xl rounded-[2.5rem] p-4 lg:p-8">
+      <div className="flex flex-col gap-8">
+        <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between px-4">
+          <div className="flex items-center gap-4">
+            <div className="p-4 rounded-[1.25rem] bg-primary/10 text-primary shadow-inner">
+              <IconChartLine size={28} stroke={2.5} />
+            </div>
+            <div className="space-y-1">
+              <h2 className="text-2xl font-black text-default-800 tracking-tighter">访问数据总览</h2>
+              <div className="flex items-center gap-2">
+                <Chip size="sm" variant="flat" color="success" className="font-bold uppercase tracking-widest text-[10px]">
+                  Real-time
+                </Chip>
+                <p className="text-default-400 text-[12px] font-medium tracking-tight">
+                  最近 {timeRange === "90d" ? "3 个月" : timeRange === "30d" ? "30 天" : "7 天"} 的访客活跃度
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="hidden sm:flex bg-default-100/50 p-1 rounded-2xl border border-divider">
+              <Tabs 
+                aria-label="Time range" 
+                selectedKey={timeRange} 
+                onSelectionChange={(key) => setTimeRange(key as string)}
+                variant="light"
+                className="font-bold"
+                classNames={{
+                  tabList: "gap-1",
+                  cursor: "bg-background shadow-md rounded-[10px]",
+                  tab: "h-8 px-4",
+                  tabContent: "font-black text-[12px]"
+                }}
+              >
+                <Tab key="90d" title="季度" />
+                <Tab key="30d" title="月度" />
+                <Tab key="7d" title="周度" />
+              </Tabs>
+            </div>
+            <Select 
+              className="flex w-full sm:hidden"
+              size="md"
+              aria-label="Select a time range"
+              selectedKeys={[timeRange]}
+              onSelectionChange={(keys) => setTimeRange(Array.from(keys)[0] as string)}
             >
-              <SelectValue placeholder="Last 3 months" />
-            </SelectTrigger>
-            <SelectContent className="rounded-xl">
-              <SelectItem value="90d" className="rounded-lg">
-                Last 3 months
-              </SelectItem>
-              <SelectItem value="30d" className="rounded-lg">
-                Last 30 days
-              </SelectItem>
-              <SelectItem value="7d" className="rounded-lg">
-                Last 7 days
-              </SelectItem>
-            </SelectContent>
-          </Select>
-        </CardAction>
-      </CardHeader>
-      <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
-        <ChartContainer
-          config={chartConfig}
-          className="aspect-auto h-[250px] w-full"
-        >
-          <AreaChart data={filteredData}>
-            <defs>
-              <linearGradient id="fillDesktop" x1="0" y1="0" x2="0" y2="1">
-                <stop
-                  offset="5%"
-                  stopColor="var(--color-desktop)"
-                  stopOpacity={1.0}
-                />
-                <stop
-                  offset="95%"
-                  stopColor="var(--color-desktop)"
-                  stopOpacity={0.1}
-                />
-              </linearGradient>
-              <linearGradient id="fillMobile" x1="0" y1="0" x2="0" y2="1">
-                <stop
-                  offset="5%"
-                  stopColor="var(--color-mobile)"
-                  stopOpacity={0.8}
-                />
-                <stop
-                  offset="95%"
-                  stopColor="var(--color-mobile)"
-                  stopOpacity={0.1}
-                />
-              </linearGradient>
-            </defs>
-            <CartesianGrid vertical={false} />
-            <XAxis
-              dataKey="date"
-              tickLine={false}
-              axisLine={false}
-              tickMargin={8}
-              minTickGap={32}
-              tickFormatter={(value) => {
-                const date = new Date(value)
-                return date.toLocaleDateString("en-US", {
-                  month: "short",
-                  day: "numeric",
-                })
-              }}
-            />
-            <ChartTooltip
-              cursor={false}
-              content={
-                <ChartTooltipContent
-                  labelFormatter={(value) => {
-                    return new Date(value).toLocaleDateString("en-US", {
+              <SelectItem key="90d">季度视图</SelectItem>
+              <SelectItem key="30d">月度视图</SelectItem>
+              <SelectItem key="7d">周度视图</SelectItem>
+            </Select>
+            <div className="hidden lg:flex items-center gap-2 ml-2 px-4 py-2 bg-success/10 text-success rounded-2xl border border-success/20 animate-in fade-in zoom-in duration-500">
+              <IconTrendingUp size={16} stroke={3} />
+              <span className="text-[12px] font-black">增长 12.5%</span>
+            </div>
+          </div>
+        </div>
+
+        <CardBody className="p-0 overflow-visible">
+          <div className="h-[350px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={filteredData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="fillDesktop" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="oklch(var(--primary))" stopOpacity={0.4} />
+                    <stop offset="95%" stopColor="oklch(var(--primary))" stopOpacity={0.0} />
+                  </linearGradient>
+                  <linearGradient id="fillMobile" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="oklch(var(--secondary))" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="oklch(var(--secondary))" stopOpacity={0.0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid vertical={false} stroke="oklch(var(--default-200) / 0.5)" strokeDasharray="8 8" />
+                <XAxis
+                  dataKey="date"
+                  tickLine={false}
+                  axisLine={false}
+                  tickMargin={12}
+                  minTickGap={32}
+                  tick={{ fill: 'oklch(var(--default-400))', fontSize: 11, fontWeight: 700 }}
+                  tickFormatter={(value) => {
+                    const date = new Date(value)
+                    return date.toLocaleDateString("zh-CN", {
                       month: "short",
                       day: "numeric",
                     })
                   }}
-                  indicator="dot"
                 />
-              }
-            />
-            <Area
-              dataKey="mobile"
-              type="natural"
-              fill="url(#fillMobile)"
-              stroke="var(--color-mobile)"
-              stackId="a"
-            />
-            <Area
-              dataKey="desktop"
-              type="natural"
-              fill="url(#fillDesktop)"
-              stroke="var(--color-desktop)"
-              stackId="a"
-            />
-          </AreaChart>
-        </ChartContainer>
-      </CardContent>
+                <RechartsTooltip 
+                  content={({ active, payload }) => {
+                    if (active && payload && payload.length) {
+                      return (
+                        <div className="bg-background/80 backdrop-blur-3xl p-4 rounded-3xl shadow-2xl border border-divider animate-in zoom-in duration-200">
+                          <p className="text-[11px] font-black text-default-400 uppercase tracking-widest mb-2">{payload[0].payload.date}</p>
+                          <div className="space-y-2">
+                            {payload.map((entry, i) => (
+                              <div key={i} className="flex items-center gap-3">
+                                <div className="size-2 rounded-full" style={{ backgroundColor: entry.color }} />
+                                <span className="text-[13px] font-bold text-default-700">{entry.name === 'desktop' ? '桌面端' : '移动端'}:</span>
+                                <span className="text-[13px] font-black text-default-900 ml-auto">{entry.value}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    }
+                    return null;
+                  }}
+                />
+                <Area
+                  name="mobile"
+                  dataKey="mobile"
+                  type="monotone"
+                  fill="url(#fillMobile)"
+                  stroke="oklch(var(--secondary))"
+                  strokeWidth={4}
+                  strokeLinecap="round"
+                  stackId="a"
+                />
+                <Area
+                  name="desktop"
+                  dataKey="desktop"
+                  type="monotone"
+                  fill="url(#fillDesktop)"
+                  stroke="oklch(var(--primary))"
+                  strokeWidth={4}
+                  strokeLinecap="round"
+                  stackId="a"
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </CardBody>
+      </div>
     </Card>
   )
 }

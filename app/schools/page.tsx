@@ -2,7 +2,7 @@ import Link from "next/link"
 
 import { createSupabaseServerClient } from "@/lib/supabase/server"
 import DashboardLayout from "@/components/dashboard-layout"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardBody, CardHeader, Divider } from "@/components/heroui-components"
 
 function formatRegion(regionInfo: unknown) {
   if (!regionInfo || typeof regionInfo !== "object") return "未设置"
@@ -34,22 +34,23 @@ export default async function SchoolsPage() {
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {schools?.map((school) => (
             <Link key={school.id} href={`/schools/${school.id}`} className="block">
-              <Card className="transition hover:shadow-md">
-                <CardHeader>
-                  <CardTitle>{school.name || "未命名学校"}</CardTitle>
-                  <CardDescription>{formatRegion(school.region_info)}</CardDescription>
+              <Card className="transition hover:shadow-md" isPressable>
+                <CardHeader className="flex flex-col items-start px-4 pb-0 pt-4">
+                  <h3 className="text-lg font-bold">{school.name || "未命名学校"}</h3>
+                  <p className="text-default-500 text-small">{formatRegion(school.region_info)}</p>
                 </CardHeader>
-                <CardContent className="text-sm text-muted-foreground">
+                <CardBody className="px-4 py-2 text-sm text-default-500">
+                  <Divider className="my-2" />
                   学校编号：{school.id}
-                </CardContent>
+                </CardBody>
               </Card>
             </Link>
           ))}
           {schools?.length === 0 && (
             <Card>
               <CardHeader>
-                <CardTitle>暂无学校</CardTitle>
-                <CardDescription>可通过联盟邀请学校加入共享题库。</CardDescription>
+                <h3 className="text-lg font-bold">暂无学校</h3>
+                <p className="text-default-500 text-small">可通过联盟邀请学校加入共享题库。</p>
               </CardHeader>
             </Card>
           )}

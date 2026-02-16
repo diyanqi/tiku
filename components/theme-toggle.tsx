@@ -3,8 +3,7 @@
 import * as React from "react"
 import { Moon, Sun } from "lucide-react"
 import { useTheme } from "next-themes"
-
-import { Button } from "@/components/ui/button"
+import { Button } from "@heroui/react"
 
 export function ThemeToggle() {
   const { resolvedTheme, setTheme } = useTheme()
@@ -12,8 +11,8 @@ export function ThemeToggle() {
 
   return (
     <Button
-      variant="ghost"
-      size="icon"
+      isIconOnly
+      variant="light"
       className="relative"
       aria-label="Toggle theme"
       onClick={() => setTheme(isDark ? "light" : "dark")}

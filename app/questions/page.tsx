@@ -2,7 +2,7 @@ import Link from "next/link"
 
 import { createSupabaseServerClient } from "@/lib/supabase/server"
 import DashboardLayout from "@/components/dashboard-layout"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardBody, CardHeader, Divider } from "@/components/heroui-components"
 
 function getStemPreview(content: unknown) {
   if (typeof content === "string") return content
@@ -38,25 +38,26 @@ export default async function QuestionsPage() {
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {questions?.map((q) => (
             <Link key={q.id} href={`/questions/${q.id}`} className="block">
-              <Card className="transition hover:shadow-md">
-                <CardHeader>
-                  <CardTitle>题目 #{q.id}</CardTitle>
-                  <CardDescription>
+              <Card className="transition hover:shadow-md" isPressable>
+                <CardHeader className="flex flex-col items-start px-4 pb-0 pt-4">
+                  <h3 className="text-lg font-bold">题目 #{q.id}</h3>
+                  <p className="text-default-500 text-small">
                     {q.q_type || "未标注题型"} · {q.q_category || "-"}
-                  </CardDescription>
+                  </p>
                 </CardHeader>
-                <CardContent className="text-sm text-muted-foreground">
+                <CardBody className="px-4 py-2 text-sm text-default-600">
                   <div className="line-clamp-3">{getStemPreview(q.content_json)}</div>
-                  <div className="mt-2">父题：{q.parent_id || "无"}</div>
-                </CardContent>
+                  <Divider className="my-2" />
+                  <div className="text-tiny text-default-400">父题：{q.parent_id || "无"}</div>
+                </CardBody>
               </Card>
             </Link>
           ))}
           {questions?.length === 0 && (
             <Card>
               <CardHeader>
-                <CardTitle>暂无题目</CardTitle>
-                <CardDescription>可以通过上传或编辑题目来丰富题库。</CardDescription>
+                <h3 className="text-lg font-bold">暂无题目</h3>
+                <p className="text-default-500 text-small">可以通过上传或编辑题目来丰富题库。</p>
               </CardHeader>
             </Card>
           )}

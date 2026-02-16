@@ -1,8 +1,7 @@
 import { createSupabaseServerClient } from "@/lib/supabase/server"
 import DashboardLayout from "@/components/dashboard-layout"
 import Link from "next/link"
-
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardHeader, CardBody, Divider, Chip } from "@/components/heroui-components"
 
 function formatRegions(regions: unknown) {
   if (!Array.isArray(regions)) return "未设置"
@@ -41,27 +40,29 @@ export default async function AlliancesPage() {
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {alliances?.map((alliance) => (
             <Link key={alliance.id} href={`/alliances/${alliance.id}`} className="block">
-              <Card className="transition hover:shadow-md">
-                <CardHeader>
-                  <CardTitle>联盟 #{alliance.id}</CardTitle>
-                  <CardDescription>{formatRegions(alliance.regions)}</CardDescription>
+              <Card className="transition hover:shadow-md" isPressable>
+                <CardHeader className="flex flex-col items-start px-4 pb-0 pt-4">
+                  <h3 className="text-lg font-bold">联盟 #{alliance.id}</h3>
+                  <p className="text-default-500 text-small">{formatRegions(alliance.regions)}</p>
                 </CardHeader>
-                <CardContent className="text-sm">
-                  <div className="text-muted-foreground">覆盖学段</div>
-                  <div className="mt-1">
+                <CardBody className="px-4 py-2 text-sm">
+                  <div className="text-default-400 text-xs uppercase font-semibold">覆盖学段</div>
+                  <div className="mt-2 flex flex-wrap gap-1">
                     {Array.isArray(alliance.edu_stages)
-                      ? alliance.edu_stages.join("、")
-                      : "未设置"}
+                      ? alliance.edu_stages.map(stage => (
+                        <Chip key={stage} size="sm" variant="flat">{stage}</Chip>
+                      ))
+                      : <span className="text-default-400">未设置</span>}
                   </div>
-                </CardContent>
+                </CardBody>
               </Card>
             </Link>
           ))}
           {alliances?.length === 0 && (
             <Card>
               <CardHeader>
-                <CardTitle>暂无联盟</CardTitle>
-                <CardDescription>创建联盟后可快速共享优质试题。</CardDescription>
+                <h3 className="text-lg font-bold">暂无联盟</h3>
+                <p className="text-default-500 text-small">创建联盟后可快速共享优质试题。</p>
               </CardHeader>
             </Card>
           )}

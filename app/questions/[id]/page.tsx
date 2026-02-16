@@ -1,5 +1,5 @@
 import DashboardLayout from "@/components/dashboard-layout"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardBody, CardHeader, Divider, Code } from "@/components/heroui-components"
 import { createSupabaseServerClient } from "@/lib/supabase/server"
 
 function getStemPreview(content: unknown) {
@@ -36,18 +36,38 @@ export default async function QuestionDetailPage({
           </div>
         )}
         {question && (
-          <Card>
-            <CardHeader>
-              <CardTitle>题目 #{question.id}</CardTitle>
-              <CardDescription>{question.q_type || "未标注题型"}</CardDescription>
+          <Card className="p-4">
+            <CardHeader className="flex flex-col items-start px-4 pb-0 pt-4">
+              <h2 className="text-2xl font-bold">题目 #{question.id}</h2>
+              <p className="text-default-500">{question.q_type || "未标注题型"}</p>
             </CardHeader>
-            <CardContent className="text-sm text-muted-foreground">
-              <div>结构类型：{question.q_category || "-"}</div>
-              <div className="mt-2">父题：{question.parent_id || "无"}</div>
-              <div className="mt-2">题干预览：{getStemPreview(question.content_json)}</div>
-              <div className="mt-2">选项配置：{JSON.stringify(question.options_json || {}, null, 2)}</div>
-              <div className="mt-2">媒体锚点：{JSON.stringify(question.media_anchor || {}, null, 2)}</div>
-            </CardContent>
+            <Divider className="my-4" />
+            <CardBody className="gap-4 text-sm text-default-600">
+              <div className="flex gap-2 items-center">
+                <span className="font-semibold w-24">结构类型:</span>
+                <Code>{question.q_category || "-"}</Code>
+              </div>
+              <div className="flex gap-2 items-center">
+                <span className="font-semibold w-24">父题:</span>
+                <span>{question.parent_id || "无"}</span>
+              </div>
+              <div className="flex flex-col gap-1">
+                <span className="font-semibold">题干预览:</span>
+                <div className="p-3 bg-default-100 rounded-lg">{getStemPreview(question.content_json)}</div>
+              </div>
+              <div className="flex flex-col gap-1">
+                <span className="font-semibold">选项配置:</span>
+                <pre className="p-3 bg-default-100 rounded-lg overflow-auto">
+                  {JSON.stringify(question.options_json || {}, null, 2)}
+                </pre>
+              </div>
+              <div className="flex flex-col gap-1">
+                <span className="font-semibold">媒体锚点:</span>
+                <pre className="p-3 bg-default-100 rounded-lg overflow-auto">
+                  {JSON.stringify(question.media_anchor || {}, null, 2)}
+                </pre>
+              </div>
+            </CardBody>
           </Card>
         )}
       </div>

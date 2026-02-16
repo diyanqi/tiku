@@ -1,7 +1,7 @@
 import Link from "next/link"
 
 import DashboardLayout from "@/components/dashboard-layout"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardBody, CardHeader, Divider } from "@/components/heroui-components"
 import { mediaItems } from "./media-data"
 
 export default function MediaPage() {
@@ -17,14 +17,15 @@ export default function MediaPage() {
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {mediaItems.map((item) => (
             <Link key={item.id} href={`/media/${item.id}`} className="block">
-              <Card className="transition hover:shadow-md">
-                <CardHeader>
-                  <CardTitle>{item.title}</CardTitle>
-                  <CardDescription>{item.type} · {item.id}</CardDescription>
+              <Card className="transition hover:shadow-md" isPressable>
+                <CardHeader className="flex flex-col items-start px-4 pb-0 pt-4">
+                  <h3 className="text-lg font-bold">{item.title}</h3>
+                  <p className="text-default-500 text-small">{item.type} · {item.id}</p>
                 </CardHeader>
-                <CardContent className="text-sm text-muted-foreground">
+                <CardBody className="px-4 py-2 text-sm text-default-500">
+                  <Divider className="my-2" />
                   时长：{item.duration}
-                </CardContent>
+                </CardBody>
               </Card>
             </Link>
           ))}
